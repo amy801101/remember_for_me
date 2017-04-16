@@ -54,6 +54,7 @@ app.listen(app.get('port'), function() {
 // Facebook robot -------
 // to post data
 app.post('/webhook/', function (req, res) {
+	console.log('webhook!!!!!!!!');
 	let messaging_events = req.body.entry[0].messaging
 	for (let i = 0; i < messaging_events.length; i++) {
 		let event = req.body.entry[0].messaging[i]
@@ -105,13 +106,13 @@ function sendTextMessage(sender, text) {
 
 // initial firebase
 function initialFireBase() {
-	console.log('########initialFireBase: ', firebaseConfig);
  	if (!firebaseInstance) {
  		firebaseInstance = admin.initializeApp(firebaseConfig);
   }
   const database = firebaseInstance.database();
   dbRoot = database.ref(NOTES_PATH);
 	// dbRoot.limitToLast(1).on('child_added', onChildAdded);
+	console.log('initialFireBase finished');
 }
 
 function onChildAdded(snapshot, previousChildKey) {
