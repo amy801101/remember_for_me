@@ -12,9 +12,6 @@ const pageToken = process.env.PAGE_TOKEN;
 
 // Initialize Firebase
 // TODO: Replace with your project's customized code snippet
-
-//
-
 const NOTES_PATH = 'notes';
 const serviceAccount = require("./remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
 const firebaseConfig = {
@@ -68,7 +65,7 @@ app.post('/webhook/', function (req, res) {
 			}
 			const str = text.substring(0, 200);
 			sendTextMessage(sender, "Text received, echo: " + str);
-			sendTextMessage(sender, getTags(str).join(', '));
+			sendTextMessage(sender, getTags(str).join(','));
 			// writeUserData(sender, text.substring(0, 200));
 		}
 		if (event.postback) {
@@ -135,5 +132,16 @@ function writeUserData(userId, text) {
 
 function getTags(str) {
 	const tagReg = /(^#| #)(\S+)/g;
-	return str.match(tagReg);
+	let match = tagReg.exec(str);
+	const result = [];
+
+	while (match != null) {
+   // matched text: match[0]
+   // match start: match.index
+   // capturing group n: match[n]
+  	console.log('match: ', match[2]); //match[2] is the second group
+  	result.push(match[2]);
+  	match = tagReg.exec(str);
+	}
+	return result;
 }
