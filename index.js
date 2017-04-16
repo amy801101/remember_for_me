@@ -13,15 +13,32 @@ const pageToken = process.env.PAGE_TOKEN;
 // Initialize Firebase
 // TODO: Replace with your project's customized code snippet
 const NOTES_PATH = 'notes';
+const LIST_LIMIT_COUNT = 50;
 const serviceAccount = require("./remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
 const firebaseConfig = {
 	credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://remember-for-me.firebaseio.com"
 }
 let firebaseInstance = admin.initializeApp(firebaseConfig);
-let dbRoot = null;
+let databaseInstance = null;
 initialFireBase();
-writeUserData('test id', '#test 1234');
+
+//
+// const tag = 'test_tag';
+// const sender = 'test id';
+// const position = `${NOTES_PATH}/${sender}/${tag}`;
+// const dataRoot = databaseInstance.ref(position);
+// const result = [];
+
+// dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
+// 	snapshot.forEach((data) => {
+// 		const timestamps = data.getKey();
+
+// 		result.push(data.val());
+// 	});
+// });
+// console.log('show notes by tag: ', result.join("\n"));
+//
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -59,15 +76,30 @@ app.post('/webhook/', function (req, res) {
 		let sender = event.sender.id
 		if (event.message && event.message.text) {
 			let text = event.message.text
-			if (text === 'Generic'){ 
-				console.log("welcome to chatbot")
-				//sendGenericMessage(sender)
-				continue
+			const tag = shouldGetNotesByTags(text);
+
+			if (tag) {	//show notes by tag
+				const position = `${NOTES_PATH}/${sender}/${tag}`;
+				const dataRoot = databaseInstance.ref(position);
+
+				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
+					const result = [];
+					
+					snapshot.forEach((data) => {
+						const timestamps = data.getKey();
+
+						result.push(data.val());
+			  	});
+
+			  	sendTextMessage(sender, result.join("\n"));
+				});
+			} else {		// write tag
+				const str = text.substring(0, 200);
+
+				sendTextMessage(sender, getTags(str).join(','));
+				sendTextMessage(sender, "Text received, echo: " + str);
+				writeUserData(sender, str);
 			}
-			const str = text.substring(0, 200);
-			sendTextMessage(sender, "Text received, echo: " + str);
-			sendTextMessage(sender, getTags(str).join(','));
-			writeUserData(sender, str);
 		}
 		if (event.postback) {
 			let text = JSON.stringify(event.postback)
@@ -107,27 +139,38 @@ function initialFireBase() {
  	if (!firebaseInstance) {
  		firebaseInstance = admin.initializeApp(firebaseConfig);
   }
-  const database = firebaseInstance.database();
-  dbRoot = database.ref(NOTES_PATH);
+  databaseInstance = firebaseInstance.database();
+  // const dbRoot = database.ref(NOTES_PATH);
 	// dbRoot.limitToLast(1).on('child_added', onChildAdded);
+	
 	console.log('initialFireBase finished');
 }
 
-function onChildAdded(snapshot, previousChildKey) {
-	const data = snapshot.val();
-}
+// function onValueFetched(snapshot, previousChildKey) {
+// 	const dbRoot = databaseInstance.ref(NOTES_PATH);
+// 	const result = [];
 
+// 	snapshot.forEach((data) => {
+// 		const timestamps = data.getKey();
+
+// 		result.push(data.val());
+//   });
+
+//   return result.join("\n");
+// }
+
+// e.g. writeUserData('test_id', '#test 1234');
 function writeUserData(userId, text) {
-	const database = firebaseInstance.database();
   const tags = getTags(text);
+  const timestamps = new Date().getTime();
+  const message = {
+	  text,
+	};
 
   tags.forEach(function (tag) {
-  	const message = {};
+  	const position = `${NOTES_PATH}/${userId}/${tag}/${timestamps}`;
 
-	  message[tag] = {
-	  	text,
-	  };
-	  database.ref(`${NOTES_PATH}/` + userId).set(message);
+	  databaseInstance && databaseInstance.ref(position).set(message);
   });
 }
 
@@ -145,4 +188,11 @@ function getTags(str) {
   	match = tagReg.exec(str);
 	}
 	return result;
+}
+
+function shouldGetNotesByTags(str) {
+	const tagReg = /(show #)(\S+)/g;
+	let match = tagReg.exec(str);
+
+	return match && match[2];
 }
