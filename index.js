@@ -16,12 +16,13 @@ const pageToken = process.env.PAGE_TOKEN;
 //
 
 const NOTES_PATH = 'notes';
-const serviceAccount = require("/remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
+const serviceAccount = require("./remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
 const firebaseConfig = {
 	credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://remember-for-me.firebaseio.com"
 }
 let firebaseInstance = admin.initializeApp(firebaseConfig);
+let dbRoot = null;
 initialFireBase();
 
 app.set('port', (process.env.PORT || 5000))
@@ -109,8 +110,8 @@ function initialFireBase() {
  		firebaseInstance = admin.initializeApp(firebaseConfig);
   }
   const database = firebaseInstance.database();
-  this.dbRoot = database.ref(NOTES_PATH);
-	// this.dbRoot.limitToLast(1).on('child_added', onChildAdded);
+  dbRoot = database.ref(NOTES_PATH);
+	// dbRoot.limitToLast(1).on('child_added', onChildAdded);
 }
 
 function onChildAdded(snapshot, previousChildKey) {
