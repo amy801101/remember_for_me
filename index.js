@@ -4,8 +4,20 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
+const firebase = require("firebase");
 
 const verifyToken = process.env.VERIFY_TOKEN;
+const pageToken = process.env.PAGE_TOKEN;
+
+// Initialize Firebase
+// TODO: Replace with your project's customized code snippet
+const firebaseConfig = {
+  apiKey: "AIzaSyBx8szIm1ufjd0pkJEQFFbQwCSVBG6omGE",
+  authDomain: "remember-for-me.firebaseapp.com",
+};
+const NOTES_PATH = 'notes';
+let firebaseInstance = null;
+
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -48,6 +60,7 @@ app.post('/webhook/', function (req, res) {
 				continue
 			}
 			sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+			writeUserData(sender, text.substring(0, 200));
 		}
 		if (event.postback) {
 			let text = JSON.stringify(event.postback)
@@ -61,10 +74,9 @@ app.post('/webhook/', function (req, res) {
 
 // recommended to inject access tokens as environmental variables, e.g.
 // const token = process.env.FB_PAGE_ACCESS_TOKEN
-const pageToken = process.env.PAGE_TOKEN;
 
 function sendTextMessage(sender, text) {
-	let messageData = { text:text }
+	let messageData = { text: text };
 	
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -80,5 +92,38 @@ function sendTextMessage(sender, text) {
 		} else if (response.body.error) {
 			console.log('Error: ', response.body.error)
 		}
-	})
+	});
+}
+
+// initial firebase
+function initialFireBase() {
+ 	if (!firebaseInstance) {
+    firebaseInstance = firebase.initializeApp(firebaseConfig);
+  }
+  const database = firebaseInstance.database();
+  this.firebaseRoot = database.ref(NOTES_PATH);
+	// this.firebaseRoot.limitToLast(1).on('child_added', onChildAdded);
+}
+
+function onChildAdded(snapshot, previousChildKey) {
+	const data = snapshot.val();
+}
+
+function writeUserData(userId, text) {
+	const database = firebaseInstance.database();
+  const tags = getTags(text);
+
+  forEach(function (tag, idx) {
+  	const message = {};
+
+	  message[tag] = {
+	  	text,
+	  };
+	  database.ref(`${NOTES_PATH}/` + userId).set(message);
+  });
+}
+
+function getTags(str) {
+	const tagReg = /(^#| #)(\S+)/g;
+	return str.match(tagReg);
 }
