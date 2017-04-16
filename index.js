@@ -84,11 +84,11 @@ app.post('/webhook/', function (req, res) {
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
 					const result = [];
-					
+
 					snapshot.forEach((data) => {
 						const timestamps = data.getKey();
 
-						result.push(data.val());
+						result.push(data.val().text);
 			  	});
 
 			  	sendTextMessage(sender, result.join("\n"));
