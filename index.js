@@ -21,6 +21,7 @@ const firebaseConfig = {
 let firebaseInstance = admin.initializeApp(firebaseConfig);
 let dbRoot = null;
 initialFireBase();
+writeUserData('test id', '#test 1234');
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -66,7 +67,7 @@ app.post('/webhook/', function (req, res) {
 			const str = text.substring(0, 200);
 			sendTextMessage(sender, "Text received, echo: " + str);
 			sendTextMessage(sender, getTags(str).join(','));
-			// writeUserData(sender, text.substring(0, 200));
+			writeUserData(sender, str);
 		}
 		if (event.postback) {
 			let text = JSON.stringify(event.postback)
@@ -120,7 +121,7 @@ function writeUserData(userId, text) {
 	const database = firebaseInstance.database();
   const tags = getTags(text);
 
-  forEach(function (tag, idx) {
+  tags.forEach(function (tag) {
   	const message = {};
 
 	  message[tag] = {
