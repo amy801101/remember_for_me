@@ -5,6 +5,8 @@ const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
 
+const verifyToken = process.env.VERIFY_TOKEN;
+
 app.set('port', (process.env.PORT || 5000))
 
 // Process application/x-www-form-urlencoded
@@ -20,7 +22,7 @@ app.get('/', function (req, res) {
 
 // for Facebook verification
 app.get('/webhook/', function (req, res) {
-	if (req.query['hub.verify_token'] === 'remember_for_me') {
+	if (req.query['hub.verify_token'] === verifyToken) {
 		res.send(req.query['hub.challenge'])
 	}
 	res.send('Error, wrong token')
