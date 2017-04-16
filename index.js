@@ -5,20 +5,24 @@ const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
 const firebase = require("firebase");
+const admin = require("firebase-admin");
 
 const verifyToken = process.env.VERIFY_TOKEN;
 const pageToken = process.env.PAGE_TOKEN;
 
 // Initialize Firebase
 // TODO: Replace with your project's customized code snippet
-const firebaseConfig = {
-  apiKey: "AIzaSyBx8szIm1ufjd0pkJEQFFbQwCSVBG6omGE",
-  authDomain: "remember-for-me.firebaseapp.com",
-};
-const NOTES_PATH = 'notes';
-let firebaseInstance = null;
-initialFireBase(firebaseConfig);
 
+//
+
+const NOTES_PATH = 'notes';
+const serviceAccount = require("/remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
+const firebaseConfig = {
+	credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://remember-for-me.firebaseio.com"
+}
+let firebaseInstance = admin.initializeApp(firebaseConfig);
+initialFireBase();
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -99,14 +103,14 @@ function sendTextMessage(sender, text) {
 }
 
 // initial firebase
-function initialFireBase(firebaseConfig) {
+function initialFireBase() {
 	console.log('########initialFireBase: ', firebaseConfig);
  	if (!firebaseInstance) {
-    firebaseInstance = firebase.initializeApp(firebaseConfig);
+ 		firebaseInstance = admin.initializeApp(firebaseConfig);
   }
   const database = firebaseInstance.database();
-  this.firebaseRoot = database.ref(NOTES_PATH);
-	// this.firebaseRoot.limitToLast(1).on('child_added', onChildAdded);
+  this.dbRoot = database.ref(NOTES_PATH);
+	// this.dbRoot.limitToLast(1).on('child_added', onChildAdded);
 }
 
 function onChildAdded(snapshot, previousChildKey) {
