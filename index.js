@@ -96,8 +96,8 @@ app.post('/webhook/', function (req, res) {
 			} else {		// write tag
 				const str = text.substring(0, 200);
 
-				sendTextMessage(sender, getTags(str).join(','));
-				sendTextMessage(sender, "Text received, echo: " + str);
+				// sendTextMessage(sender, getTags(str).join(','));
+				sendTextMessage(sender, "小的記住了: " + str);
 				writeUserData(sender, str);
 			}
 		}
