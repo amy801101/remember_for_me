@@ -12,6 +12,7 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "firebase": "^3.7.8",
+    "firebase-admin": "^4.2.1",
     "request": "^2.81.0"
   }
 }
