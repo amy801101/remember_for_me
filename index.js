@@ -17,6 +17,7 @@ const firebaseConfig = {
 };
 const NOTES_PATH = 'notes';
 let firebaseInstance = null;
+initialFireBase();
 
 
 app.set('port', (process.env.PORT || 5000))
@@ -59,8 +60,10 @@ app.post('/webhook/', function (req, res) {
 				//sendGenericMessage(sender)
 				continue
 			}
-			sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
-			writeUserData(sender, text.substring(0, 200));
+			const str = text.substring(0, 200);
+			sendTextMessage(sender, "Text received, echo: " + str);
+			sendTextMessage(sender, getTags(str).join(', '));
+			// writeUserData(sender, text.substring(0, 200));
 		}
 		if (event.postback) {
 			let text = JSON.stringify(event.postback)
