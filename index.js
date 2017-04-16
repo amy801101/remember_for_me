@@ -17,7 +17,7 @@ const firebaseConfig = {
 };
 const NOTES_PATH = 'notes';
 let firebaseInstance = null;
-initialFireBase();
+initialFireBase(firebaseConfig);
 
 
 app.set('port', (process.env.PORT || 5000))
@@ -99,7 +99,8 @@ function sendTextMessage(sender, text) {
 }
 
 // initial firebase
-function initialFireBase() {
+function initialFireBase(firebaseConfig) {
+	console.log('########initialFireBase: ', firebaseConfig);
  	if (!firebaseInstance) {
     firebaseInstance = firebase.initializeApp(firebaseConfig);
   }
