@@ -23,23 +23,6 @@ let firebaseInstance = admin.initializeApp(firebaseConfig);
 let databaseInstance = null;
 initialFireBase();
 
-//
-// const tag = 'test_tag';
-// const sender = 'test id';
-// const position = `${NOTES_PATH}/${sender}/${tag}`;
-// const dataRoot = databaseInstance.ref(position);
-// const result = [];
-
-// dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
-// 	snapshot.forEach((data) => {
-// 		const timestamps = data.getKey();
-
-// 		result.push(data.val());
-// 	});
-// });
-// console.log('show notes by tag: ', result.join("\n"));
-//
-
 app.set('port', (process.env.PORT || 5000))
 
 // Process application/x-www-form-urlencoded
@@ -75,6 +58,7 @@ app.post('/webhook/', function (req, res) {
 		let event = req.body.entry[0].messaging[i]
 		let sender = event.sender.id
 		if (event.message && event.message.text) {
+			console.log(event.message);
 			let text = event.message.text
 			const tag = shouldGetNotesByTags(text);
 
@@ -91,13 +75,13 @@ app.post('/webhook/', function (req, res) {
 						result.push(data.val().text);
 			  	});
 
-			  	sendTextMessage(sender, result.join("\n"));
+			  	sendTextMessage(sender, result.join("\n\n"));
 				});
 			} else {		// write tag
 				const str = text.substring(0, 200);
 
 				// sendTextMessage(sender, getTags(str).join(','));
-				sendTextMessage(sender, "小的記住了: " + str);
+				sendTextMessage(sender, "小的記住了:\n " + str);
 				writeUserData(sender, str);
 			}
 		}
