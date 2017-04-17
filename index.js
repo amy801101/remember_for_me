@@ -13,6 +13,7 @@ const pageToken = process.env.PAGE_TOKEN;
 // Initialize Firebase
 // TODO: Replace with your project's customized code snippet
 const NOTES_PATH = 'notes';
+const ALL_NOTES_PATH = 'general-notes-by-id';
 const LIST_LIMIT_COUNT = 50;
 const serviceAccount = require("./remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
 const firebaseConfig = {
@@ -22,6 +23,20 @@ const firebaseConfig = {
 let firebaseInstance = admin.initializeApp(firebaseConfig);
 let databaseInstance = null;
 initialFireBase();
+// const messageData = {
+// 	text: '#123',
+// 	attachments: [{ 
+// 		title: '',
+// 		url: 'https://www.facebook.com/TigerairTaiwan/photos/a.267516790118361.1073741829.251538521716188/654480274755342/?type=3',
+// 		payload: null 
+// 	},
+// 	{ 
+// 		title: '',
+// 		url: 'https://www.facebook.com/TigerairTaiwan/photos/a.267516790118361.1073741829.251538521716188/654480274755342/?type=3',
+// 		payload: null 
+// 	}]
+// };
+// writeUserData('test id', messageData);
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -59,8 +74,9 @@ app.post('/webhook/', function (req, res) {
 		let sender = event.sender.id
 		if (event.message && event.message.text) {
 			console.log(event.message);
-			let text = event.message.text
+			const text = event.message.text
 			const tag = shouldGetNotesByTags(text);
+			const attachments = event.message.attachments || [];
 
 			if (tag) {	//show notes by tag
 				const position = `${NOTES_PATH}/${sender}/${tag}`;
@@ -79,10 +95,16 @@ app.post('/webhook/', function (req, res) {
 				});
 			} else {		// write tag
 				const str = text.substring(0, 200);
+				const messageData = { text: str };
+				if (attachments) {
+					messageData.attachments = attachments;
+				} 
+				const fbMessge = Object.assign({}, messageData, { 
+					text: "小的記住了:\n" + str,
+				});
 
-				// sendTextMessage(sender, getTags(str).join(','));
-				sendTextMessage(sender, "小的記住了:\n " + str);
-				writeUserData(sender, str);
+				writeUserData(sender, messageData);
+				sendTextMessage(sender, fbMessge);
 			}
 		}
 		if (event.postback) {
@@ -98,8 +120,11 @@ app.post('/webhook/', function (req, res) {
 // recommended to inject access tokens as environmental variables, e.g.
 // const token = process.env.FB_PAGE_ACCESS_TOKEN
 
-function sendTextMessage(sender, text) {
+function sendTextMessage(sender, text, attachments = []) {
 	let messageData = { text: text };
+	if (attachments) {
+		messageData.attachments = attachments;
+	} 
 	
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -144,17 +169,19 @@ function initialFireBase() {
 // }
 
 // e.g. writeUserData('test_id', '#test 1234');
-function writeUserData(userId, text) {
+function writeUserData(userId, messageData) {
+	const { text } = messageData;
   const tags = getTags(text);
   const timestamps = new Date().getTime();
-  const message = {
-	  text,
-	};
 
+  // save data to general
+  const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${timestamps}`;
+  databaseInstance && databaseInstance.ref(notesPosition).set(messageData);
   tags.forEach(function (tag) {
-  	const position = `${NOTES_PATH}/${userId}/${tag}/${timestamps}`;
+  	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${timestamps}`;
 
-	  databaseInstance && databaseInstance.ref(position).set(message);
+  	// save message id to each tag
+	  databaseInstance && databaseInstance.ref(tagPosition).set(messageData);
   });
 }
 
