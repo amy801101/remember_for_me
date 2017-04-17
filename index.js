@@ -72,7 +72,7 @@ app.post('/webhook/', function (req, res) {
 	for (let i = 0; i < messaging_events.length; i++) {
 		let event = req.body.entry[0].messaging[i]
 		let sender = event.sender.id
-		console.log('message: 'event.message);
+		console.log('message: ', event.message);
 		if (event.message && event.message.text) {
 			const text = event.message.text
 			const tag = shouldGetNotesByTags(text);
