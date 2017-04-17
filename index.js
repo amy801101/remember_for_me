@@ -68,12 +68,12 @@ app.listen(app.get('port'), function() {
 // to post data
 app.post('/webhook/', function (req, res) {
 	console.log('webhook!!!!!!!!');
+	console.log(event.message);
 	let messaging_events = req.body.entry[0].messaging
 	for (let i = 0; i < messaging_events.length; i++) {
 		let event = req.body.entry[0].messaging[i]
 		let sender = event.sender.id
 		if (event.message && event.message.text) {
-			console.log(event.message);
 			const text = event.message.text
 			const tag = shouldGetNotesByTags(text);
 			const attachments = event.message.attachments || [];
