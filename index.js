@@ -123,7 +123,8 @@ app.post('/webhook/', function (req, res) {
 function sendTextMessage(sender, text, attachments = []) {
 	let messageData = { text };
 	if (attachments) {
-		messageData.attachments = attachments;
+		messageData.attachment = attachments[0]; 
+		// can only sent at most one attachment
 	} 
 	
 	request({
