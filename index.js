@@ -99,12 +99,12 @@ app.post('/webhook/', function (req, res) {
 				if (attachments) {
 					messageData.attachments = attachments;
 				} 
-				const fbMessge = Object.assign({}, messageData, { 
-					text: "小的記住了:\n" + str,
-				});
+				// const fbMessge = Object.assign({}, messageData, { 
+				// 	text: "小的記住了:\n" + str,
+				// });
 
 				writeUserData(sender, messageData);
-				sendTextMessage(sender, fbMessge);
+				sendTextMessage(sender, `小的記住了:\n${str}`, attachments);
 			}
 		}
 		if (event.postback) {
@@ -121,7 +121,7 @@ app.post('/webhook/', function (req, res) {
 // const token = process.env.FB_PAGE_ACCESS_TOKEN
 
 function sendTextMessage(sender, text, attachments = []) {
-	let messageData = { text: text };
+	let messageData = { text };
 	if (attachments) {
 		messageData.attachments = attachments;
 	} 
