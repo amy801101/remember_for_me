@@ -119,7 +119,7 @@ app.post('/webhook/', function (req, res) {
 				// });
 
 				writeUserData(sender, messageData);
-				sendMessageOrAttach(sender, messageData);
+				// sendMessageOrAttach(sender, messageData);
 			}
 		}
 		if (event.postback) {
