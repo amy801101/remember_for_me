@@ -96,11 +96,11 @@ app.post('/webhook/', function (req, res) {
 				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
 				            subtitle:"We\'ve got the right hat for everyone.",
 				            default_action: {
-				              "type": "web_url",
-				              "url": "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&permPage=1",
-				              "messenger_extensions": true,
-				              "webview_height_ratio": "tall",
-				              "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+				              type: "web_url",
+				              url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&permPage=1",
+				              //messenger_extensions: true,
+				              webview_height_ratio: "tall",
+				              fallback_url: "https://peterssendreceiveapp.ngrok.io/"
 				            },
 				          }
 	        			],
