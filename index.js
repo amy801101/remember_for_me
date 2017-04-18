@@ -149,8 +149,10 @@ app.post('/webhook/', function (req, res) {
 	        		}
 	        	}
 					};
+					console.log('attachmentsData: ', attachmentsData);
 					sendMessageOrAttach(sender, attachmentsData);
 				} 
+
 				console.log('firebaseData: ', firebaseData);
 				writeUserData(sender, tags, messageId, firebaseData);
 			}
@@ -232,13 +234,13 @@ function writeUserData(userId, tags, messageId, firebaseData) {
 
   // save data to general
   const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${timestamps}`;
-  databaseInstance && databaseInstance.ref(notesPosition).set(timestamps);
+  databaseInstance && databaseInstance.ref(notesPosition).set(firebaseData);
 
   tags.forEach(function (tag) {
   	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${timestamps}`;
 
   	// save message id to each tag
-	  databaseInstance && databaseInstance.ref(tagPosition).set(timestamps);
+	  databaseInstance && databaseInstance.ref(tagPosition).set(firebaseData);
   });
 }
 
