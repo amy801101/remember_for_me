@@ -88,6 +88,7 @@ app.post('/webhook/', function (req, res) {
 				const firebaseData = {};
 				const textData = {};
 				
+				firebaseData.id = messageId;
 				firebaseData.text = str;
 				textData.message = {
 					text: "小的記住了:\n" + str,
@@ -230,14 +231,14 @@ function writeUserData(userId, tags, messageId, firebaseData) {
   const timestamps = new Date().getTime();
 
   // save data to general
-  const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${messageId}`;
-  databaseInstance && databaseInstance.ref(notesPosition).set(firebaseData);
+  const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${timestamps}`;
+  databaseInstance && databaseInstance.ref(notesPosition).set(timestamps);
 
   tags.forEach(function (tag) {
-  	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${messageId}`;
+  	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${timestamps}`;
 
   	// save message id to each tag
-	  databaseInstance && databaseInstance.ref(tagPosition).set(firebaseData);
+	  databaseInstance && databaseInstance.ref(tagPosition).set(timestamps);
   });
 }
 
