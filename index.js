@@ -82,9 +82,9 @@ app.post('/webhook/', function (req, res) {
 			} else {		// write tag
 				const str = text.substring(0, 200);
 				const messageData = {};
+				let testData = {};
 				
 				if (attachments.length > 0) {
-					let testData = {};
 					testData.message = {
     				attachment:{
       				type: "template",
