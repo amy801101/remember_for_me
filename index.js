@@ -23,20 +23,6 @@ const firebaseConfig = {
 let firebaseInstance = admin.initializeApp(firebaseConfig);
 let databaseInstance = null;
 initialFireBase();
-// const messageData = {
-// 	text: '#123',
-// 	attachments: [{ 
-// 		title: '',
-// 		url: 'https://www.facebook.com/TigerairTaiwan/photos/a.267516790118361.1073741829.251538521716188/654480274755342/?type=3',
-// 		payload: null 
-// 	},
-// 	{ 
-// 		title: '',
-// 		url: 'https://www.facebook.com/TigerairTaiwan/photos/a.267516790118361.1073741829.251538521716188/654480274755342/?type=3',
-// 		payload: null 
-// 	}]
-// };
-// writeUserData('test id', messageData);
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -98,6 +84,30 @@ app.post('/webhook/', function (req, res) {
 				const messageData = {};
 				
 				if (attachments.length > 0) {
+					let testData = {};
+					testData.message = {
+    				attachment:{
+      				type: "template",
+      				payload:{
+	        			template_type:"generic",
+	        			elements:[
+	        				{
+				            title:"Welcome to Peter\'s Hats",
+				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
+				            subtitle:"We\'ve got the right hat for everyone.",
+				            default_action: {
+				              "type": "web_url",
+				              "url": "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&permPage=1",
+				              "messenger_extensions": true,
+				              "webview_height_ratio": "tall",
+				              "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+				            },
+				          }
+	        			],
+        			}
+        		}
+        	};
+
 					const attachment = attachments[0];
 					messageData.message = {
 						attachment: {
@@ -113,13 +123,13 @@ app.post('/webhook/', function (req, res) {
 						text: str
 					};
 				}
-				console.log('messageData: ', messageData);
+				console.log('testData: ', testData);
 				// const response = Object.assign({}, messageData, { 
 				// 	text: "小的記住了:\n" + str,
 				// });
 
-				writeUserData(sender, messageData);
-				// sendMessageOrAttach(sender, messageData);
+				// writeUserData(sender, messageData);
+				sendMessageOrAttach(sender, testData);
 			}
 		}
 		if (event.postback) {
