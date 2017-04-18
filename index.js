@@ -95,7 +95,7 @@ app.post('/webhook/', function (req, res) {
 				}
 				sendMessageOrAttach(sender, textData);
 
-				// if contains attachments, send it
+				// if contains attachments, it must be link
 				if (attachments.length > 0) {
 					/*
 					testData.message = {
@@ -138,6 +138,7 @@ app.post('/webhook/', function (req, res) {
         	};
         	*/
         	const attachmentsData = {};
+        	const attachment = attachments[0];
 
         	firebaseData.attachments = attachments;
 					attachmentsData.message = {
@@ -145,7 +146,10 @@ app.post('/webhook/', function (req, res) {
       				type: "template",
       				payload:{
 	        			template_type: "generic",
-	        			elements: attachments,
+	        			elements: [{
+	        				title: attachment.title,
+	        				item_url: attachment.url,
+	        			}],
 	        		}
 	        	}
 					};
