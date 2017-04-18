@@ -97,12 +97,11 @@ app.post('/webhook/', function (req, res) {
 				            subtitle:"We\'ve got the right hat for everyone.",
 				            default_action: {
 				              type: "web_url",
-				              url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&permPage=1",
+				              url: "http://news.cnyes.com/news/cat/headline",
 				              //messenger_extensions: true,
 				              webview_height_ratio: "tall",
-				              fallback_url: "https://peterssendreceiveapp.ngrok.io/"
+				              fallback_url: "http://news.cnyes.com/news/cat/headline"
 				            },
-				            buttons: [],
 				          },
 	        			],
         			}
