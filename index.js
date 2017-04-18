@@ -91,20 +91,35 @@ app.post('/webhook/', function (req, res) {
 						result.push(data.val().text);
 			  	});
 
-			  	sendTextMessage(sender, result.join("\n\n"));
+			  	sendMessageOrAttach(sender, result.join("\n\n"));
 				});
 			} else {		// write tag
 				const str = text.substring(0, 200);
-				const messageData = { text: str };
-				if (attachments) {
-					messageData.attachments = attachments;
-				} 
-				// const fbMessge = Object.assign({}, messageData, { 
+				const messageData = {};
+				
+				if (attachments.length > 0) {
+					const attachment = attachments[0];
+					messageData.message = {
+						attachment: {
+							type: attachment.type,
+							payload: {
+								title: attachment.title,
+								url: attachment.url
+							}
+						}
+					};
+				} else {
+					messageData.message = {
+						text: str
+					};
+				}
+				console.log('messageData: ', messageData);
+				// const response = Object.assign({}, messageData, { 
 				// 	text: "小的記住了:\n" + str,
 				// });
 
 				writeUserData(sender, messageData);
-				sendTextMessage(sender, `小的記住了:\n${str}`, attachments);
+				sendMessageOrAttach(sender, messageData);
 			}
 		}
 		if (event.postback) {
@@ -120,29 +135,30 @@ app.post('/webhook/', function (req, res) {
 // recommended to inject access tokens as environmental variables, e.g.
 // const token = process.env.FB_PAGE_ACCESS_TOKEN
 
-function sendTextMessage(sender, text, attachments = []) {
-	let messageData = { text };
-	if (attachments) {
-		const attachment = attachments[0];
+function sendMessageOrAttach(sender, data) {
+	// let messageData = { text };
+	// if (attachments) {
+	// 	const attachment = attachments[0];
 
-		messageData.attachment = {
-			type: attachment.type,
-			payload: {
-				title: attachment.title,
-				url: attachment.url,
-			},
-		}; 
-		// can only sent at most one attachment
-	} 
+	// 	messageData.attachment = {
+	// 		type: attachment.type,
+	// 		payload: {
+	// 			title: attachment.title,
+	// 			url: attachment.url,
+	// 		},
+	// 	}; 
+	// 	// can only sent at most one attachment
+	// } 
 	
+	const jsonObj = Object.assign({}, {
+		recipient: { id: sender }
+	}, data);
+
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
 		qs: {access_token:pageToken},
 		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
+		json: jsonObj,
 	}, function(error, response, body) {
 		if (error) {
 			console.log('Error sending messages: ', error)
