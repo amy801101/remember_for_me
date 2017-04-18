@@ -95,6 +95,15 @@ app.post('/webhook/', function (req, res) {
 				            title:"Welcome to Peter\'s Hats",
 				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
 				            subtitle:"We\'ve got the right hat for everyone.",
+				            buttons: [{
+				              type: "web_url",
+				              url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
+				              title: "「由一群有所欠缺的人共同演奏出來，才足以成為音樂。」"
+				            }, {
+				              type: "postback",
+				              title: "Abonnieren",
+				              payload: "subscribe-fischer",
+				            }],
 				            // default_action: {
 				            //   type: "web_url",
 				            //   url: "http://news.cnyes.com/news/cat/headline",
