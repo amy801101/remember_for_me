@@ -58,13 +58,15 @@ app.post('/webhook/', function (req, res) {
 	for (let i = 0; i < messaging_events.length; i++) {
 		let event = req.body.entry[0].messaging[i]
 		let sender = event.sender.id
+
 		console.log('message: ', event.message);
 		if (event.message && event.message.text) {
+			const messageId = event.message.mid;
 			const text = event.message.text
 			const tag = shouldGetNotesByTags(text);
 			const attachments = event.message.attachments || [];
 
-			if (tag) {	//show notes by tag
+			if (shouldGetNotesByTags(text)) {	//show notes by tag
 				const position = `${NOTES_PATH}/${sender}/${tag}`;
 				const dataRoot = databaseInstance.ref(position);
 
@@ -81,10 +83,20 @@ app.post('/webhook/', function (req, res) {
 				});
 			} else {		// write tag
 				const str = text.substring(0, 200);
-				const messageData = {};
-				let testData = {};
+				const tags = getTags(text);
+				// let testData = {};
+				const firebaseData = {};
+				const textData = {};
 				
+				firebaseData.text = str;
+				textData.message = {
+					text: "小的記住了:\n" + str,
+				}
+				sendMessageOrAttach(sender, textData);
+
+				// if contains attachments, send it
 				if (attachments.length > 0) {
+					/*
 					testData.message = {
     				attachment:{
       				type: "template",
@@ -117,35 +129,29 @@ app.post('/webhook/', function (req, res) {
 				            title:"Welcome to Peter\'s Hats~~~~~~~~",
 				            subtitle:"We\'ve got the right hat for everyone.",
 				            item_url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
-				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
+				            //image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
 				          },
 	        			],
         			}
         		}
         	};
+        	*/
+        	const attachmentsData = {};
 
-					const attachment = attachments[0];
-					messageData.message = {
+        	firebaseData.attachments = attachments;
+					attachmentsData.message = {
 						attachment: {
-							type: attachment.type,
-							payload: {
-								title: attachment.title,
-								url: attachment.url
-							}
-						}
+      				type: "template",
+      				payload:{
+	        			template_type: "generic",
+	        			elements: attachments,
+	        		}
+	        	}
 					};
-				} else {
-					messageData.message = {
-						text: str
-					};
-				}
-				console.log('testData: ', testData);
-				// const response = Object.assign({}, messageData, { 
-				// 	text: "小的記住了:\n" + str,
-				// });
-
-				// writeUserData(sender, messageData);
-				sendMessageOrAttach(sender, testData);
+					sendMessageOrAttach(sender, attachmentsData);
+				} 
+				console.log('firebaseData: ', firebaseData);
+				writeUserData(sender, tags, messageId, firebaseData);
 			}
 		}
 		if (event.postback) {
@@ -220,19 +226,18 @@ function initialFireBase() {
 // }
 
 // e.g. writeUserData('test_id', '#test 1234');
-function writeUserData(userId, messageData) {
-	const { text } = messageData;
-  const tags = getTags(text);
+function writeUserData(userId, tags, messageId, firebaseData) {
   const timestamps = new Date().getTime();
 
   // save data to general
-  const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${timestamps}`;
-  databaseInstance && databaseInstance.ref(notesPosition).set(messageData);
+  const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${messageId}`;
+  databaseInstance && databaseInstance.ref(notesPosition).set(firebaseData);
+
   tags.forEach(function (tag) {
-  	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${timestamps}`;
+  	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${messageId}`;
 
   	// save message id to each tag
-	  databaseInstance && databaseInstance.ref(tagPosition).set(messageData);
+	  databaseInstance && databaseInstance.ref(tagPosition).set(firebaseData);
   });
 }
 
