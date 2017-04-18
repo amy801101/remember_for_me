@@ -89,8 +89,8 @@ app.post('/webhook/', function (req, res) {
     				attachment:{
       				type: "template",
       				payload:{
-	        			template_type:"generic",
-	        			elements:[
+	        			template_type: "generic",
+	        			elements: [
 	        				{
 				            title:"Welcome to Peter\'s Hats",
 				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
@@ -102,7 +102,8 @@ app.post('/webhook/', function (req, res) {
 				              webview_height_ratio: "tall",
 				              fallback_url: "https://peterssendreceiveapp.ngrok.io/"
 				            },
-				          }
+				            buttons: [],
+				          },
 	        			],
         			}
         		}
