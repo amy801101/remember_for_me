@@ -144,15 +144,15 @@ app.post('/webhook/', function (req, res) {
 	        			elements: [{
 	        				title: attachment.title,
 	        				subtitle: attachment.title,
-	        				item_url: attachment.url,
+	        				item_url: retrievePureUrl(attachment.url),
 	        			}],
 	        		}
 	        	}
 					};
 					// sendMessageOrAttach(sender, attachmentsData);
-					
+
 					firebaseData.attachments = attachments;
-					firebaseData.text += `\n${attachment.url}`;
+					firebaseData.text += `\n${retrievePureUrl(attachment.url)}`;
 				} 
 
 				textData.message = {
@@ -166,7 +166,7 @@ app.post('/webhook/', function (req, res) {
 		}
 		if (event.postback) {
 			let text = JSON.stringify(event.postback)
-			sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+			sendTextMessage(sender, "Postback received: " + text.substring(0, 200), token)
 			continue
 		}
 	}
@@ -251,6 +251,7 @@ function writeUserData(userId, tags, messageId, firebaseData) {
   });
 }
 
+/* str processing */
 function getTags(str) {
 	const tagReg = /(^#| #)(\S+)/g;
 	let match = tagReg.exec(str);
@@ -272,4 +273,19 @@ function shouldGetNotesByTags(str) {
 	let match = tagReg.exec(str);
 
 	return match && match[2];
+}
+
+function retrievePureUrl(url) {
+	const fbRedirectUrl = 'l.facebook.com';
+	
+	if(url.indexOf(fbRedirectUrl) > -1) {
+		// include fbRedirectUrl
+		const sections = url.split('?u=');
+
+		if (sections.length > 1) {
+			return decodeURIComponent(sections[1]);
+		}
+	} 
+	
+	return url;
 }
