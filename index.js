@@ -276,7 +276,7 @@ function shouldGetNotesByTags(str) {
 }
 
 function retrievePureUrl(url) {
-	const pureUrlReg = /l\.facebook\.com\S+\?u=(\S+)&/g;
+	const pureUrlReg = /l\.facebook\.com\S+\?u=(\S[^\&]+)/g;
 	let match = pureUrlReg.exec(url);
 
 	return (match && decodeURIComponent(match[1])) || url;
