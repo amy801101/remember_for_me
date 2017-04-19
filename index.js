@@ -276,16 +276,8 @@ function shouldGetNotesByTags(str) {
 }
 
 function retrievePureUrl(url) {
-	const fbRedirectUrl = 'l.facebook.com';
-	
-	if(url.indexOf(fbRedirectUrl) > -1) {
-		// include fbRedirectUrl
-		const sections = url.split('?u=');
+	const pureUrlReg = /l\.facebook\.com\S+\?u=(\S+)&/g;
+	let match = pureUrlReg.exec(url);
 
-		if (sections.length > 1) {
-			return decodeURIComponent(sections[1]);
-		}
-	} 
-	
-	return url;
+	return (match && decodeURIComponent(match[1])) || url;
 }
