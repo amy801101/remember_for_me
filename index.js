@@ -152,15 +152,17 @@ app.post('/webhook/', function (req, res) {
 					};
 					sendMessageOrAttach(sender, attachmentsData);
 					*/
-					
+
 					firebaseData.attachments = attachments.map(function(attachment) {
+						const pureUrl = retrievePureUrl(attachment.url);
+
+						firebaseData.text += `\n${pureUrl}`;
 						return {
 							type: attachment.type,
 							title: attachment.title,
-							url: retrievePureUrl(attachment.url),
+							url: pureUrl,
 						};
 					});
-					firebaseData.text += `\n${retrievePureUrl(attachment.url)}`;
 				} 
 
 				textData.message = {
