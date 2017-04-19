@@ -156,7 +156,7 @@ app.post('/webhook/', function (req, res) {
 					firebaseData.attachments = attachments.map(function(attachment) {
 						const pureUrl = retrievePureUrl(attachment.url);
 						
-						if(firebaseData.text.indexOf(firebaseData.text) === -1) {
+						if(firebaseData.text.indexOf(pureUrl) === -1) {
 							firebaseData.text += `\n${pureUrl}`;
 						}
 						return {
