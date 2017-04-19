@@ -87,13 +87,9 @@ app.post('/webhook/', function (req, res) {
 				// let testData = {};
 				const firebaseData = {};
 				const textData = {};
-				
+
 				firebaseData.id = messageId;
 				firebaseData.text = str;
-				textData.message = {
-					text: "小的記住了:\n" + str,
-				}
-				sendMessageOrAttach(sender, textData);
 
 				// if contains attachments, it must be link
 				if (attachments.length > 0) {
@@ -140,7 +136,6 @@ app.post('/webhook/', function (req, res) {
         	const attachmentsData = {};
         	const attachment = attachments[0];
 
-        	firebaseData.attachments = attachments;
 					attachmentsData.message = {
 						attachment: {
       				type: "template",
@@ -148,14 +143,22 @@ app.post('/webhook/', function (req, res) {
 	        			template_type: "generic",
 	        			elements: [{
 	        				title: attachment.title,
+	        				subtitle: attachment.title,
 	        				item_url: attachment.url,
 	        			}],
 	        		}
 	        	}
 					};
-					console.log('attachmentsData: ', attachmentsData);
-					sendMessageOrAttach(sender, attachmentsData);
+					// sendMessageOrAttach(sender, attachmentsData);
+					
+					firebaseData.attachments = attachments;
+					firebaseData.text += `\n${attachment.url}`;
 				} 
+
+				textData.message = {
+					text: "小的記住了:\n" + firebaseData.text,
+				}
+				sendMessageOrAttach(sender, textData);
 
 				console.log('firebaseData: ', firebaseData);
 				writeUserData(sender, tags, messageId, firebaseData);
