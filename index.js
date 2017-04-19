@@ -133,6 +133,7 @@ app.post('/webhook/', function (req, res) {
         		}
         	};
         	*/
+        	/*
         	const attachmentsData = {};
         	const attachment = attachments[0];
 
@@ -149,9 +150,16 @@ app.post('/webhook/', function (req, res) {
 	        		}
 	        	}
 					};
-					// sendMessageOrAttach(sender, attachmentsData);
-
-					firebaseData.attachments = attachments;
+					sendMessageOrAttach(sender, attachmentsData);
+					*/
+					
+					firebaseData.attachments = attachments.map(function(attachment) {
+						return {
+							type: attachment.type,
+							title: attachment.title,
+							url: retrievePureUrl(attachment.url),
+						};
+					});
 					firebaseData.text += `\n${retrievePureUrl(attachment.url)}`;
 				} 
 
