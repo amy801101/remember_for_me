@@ -84,7 +84,7 @@ app.post('/webhook/', function (req, res) {
 						text: tagResult.join("\n\n"),
 					}
 					console.log('textData: ', textData);
-			  	//sendMessageOrAttach(sender, textData);
+			  	sendMessageOrAttach(sender, textData);
 				});
 			} else {		// write tag
 				const str = text.substring(0, 200);
@@ -183,7 +183,7 @@ app.post('/webhook/', function (req, res) {
 				textData.message = {
 					text: "小的記住了:\n" + firebaseData.text,
 				}
-				sendMessageOrAttach(sender, textData);
+				//sendMessageOrAttach(sender, textData);
 
 				console.log('firebaseData: ', firebaseData);
 				writeUserData(sender, tags, messageId, firebaseData);
