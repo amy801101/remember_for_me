@@ -84,7 +84,7 @@ app.post('/webhook/', function (req, res) {
 						text: tagResult.join("\n\n"),
 					}
 					console.log('textData: ', textData);
-			  	sendMessageOrAttach(sender, textData);
+			  	//sendMessageOrAttach(sender, textData);
 				});
 			} else {		// write tag
 				const str = text.substring(0, 200);
