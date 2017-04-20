@@ -203,20 +203,6 @@ app.post('/webhook/', function (req, res) {
 // const token = process.env.FB_PAGE_ACCESS_TOKEN
 
 function sendMessageOrAttach(sender, data) {
-	// let messageData = { text };
-	// if (attachments) {
-	// 	const attachment = attachments[0];
-
-	// 	messageData.attachment = {
-	// 		type: attachment.type,
-	// 		payload: {
-	// 			title: attachment.title,
-	// 			url: attachment.url,
-	// 		},
-	// 	}; 
-	// 	// can only sent at most one attachment
-	// } 
-	
 	const jsonObj = Object.assign({}, {
 		recipient: { id: sender }
 	}, data);
@@ -294,7 +280,7 @@ function getTags(str) {
 }
 
 function shouldGetNotesByTags(str) {
-	const tagReg = /(show #)(\S+)/g;
+	const tagReg = /(show #)(\S[^#]+)/g;
 	let match = tagReg.exec(str);
 
 	return match && match[2];
