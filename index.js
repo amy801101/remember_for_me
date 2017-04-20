@@ -159,7 +159,7 @@ app.post('/webhook/', function (req, res) {
 					*/
 
 					firebaseData.attachments = attachments.map(function(attachment) {
-						let pureUrl = retrievePureUrl(attachment.url) || '';
+						let pureUrl = retrievePureUrl(attachment.url);
 						console.log('pureUrl: ', pureUrl);
 						console.log('payload: ', attachment.payload);
 
@@ -172,10 +172,10 @@ app.post('/webhook/', function (req, res) {
 						}
 
 						return {
-							type: attachment.type,
-							title: attachment.title,
-							url: pureUrl,
-							payload: attachment.payload,
+							type: attachment.type || '',
+							title: attachment.title || '',
+							url: pureUrl || '',
+							payload: attachment.payload || '',
 						};
 					});
 				} 
