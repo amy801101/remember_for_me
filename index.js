@@ -71,22 +71,27 @@ app.post('/webhook/', function (req, res) {
 				const dataRoot = databaseInstance.ref(position);
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
-					const result = [];
+					const tagResult = [];
+					const textData = {};
 
 					snapshot.forEach((data) => {
 						const timestamps = data.getKey();
 
-						result.push(data.val().text);
+						tagResult.push(data.val().text);
 			  	});
 
-			  	sendMessageOrAttach(sender, result.join("\n\n"));
+					textData.message = {
+						text: tagResult.join("\n\n"),
+					}
+					console.log('textData: ', textData);
+			  	sendMessageOrAttach(sender, textData);
 				});
 			} else {		// write tag
 				const str = text.substring(0, 200);
 				const tags = getTags(text);
-				// let testData = {};
 				const firebaseData = {};
 				const textData = {};
+				// let testData = {};
 
 				firebaseData.id = messageId;
 				firebaseData.text = str;
