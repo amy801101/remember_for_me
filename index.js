@@ -160,14 +160,17 @@ app.post('/webhook/', function (req, res) {
 
 					firebaseData.attachments = attachments.map(function(attachment) {
 						const pureUrl = retrievePureUrl(attachment.url);
-						
-						if(firebaseData.text.indexOf(pureUrl) === -1) {
+						console.log('pureUrl: ', pureUrl);
+
+						if(pureUrl && firebaseData.text.indexOf(pureUrl) === -1) {
 							firebaseData.text += `\n${pureUrl}`;
 						}
+
 						return {
 							type: attachment.type,
 							title: attachment.title,
 							url: pureUrl,
+							payload: attachment.payload,
 						};
 					});
 				} 
