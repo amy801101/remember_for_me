@@ -186,7 +186,7 @@ app.post('/webhook/', function (req, res) {
 				//sendMessageOrAttach(sender, textData);
 
 				console.log('firebaseData: ', firebaseData);
-				writeUserData(sender, tags, messageId, firebaseData);
+				//writeUserData(sender, tags, messageId, firebaseData);
 			}
 		}
 		if (event.postback) {
