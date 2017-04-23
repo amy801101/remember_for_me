@@ -308,5 +308,6 @@ function generateTemplates(attachments) {
 		}
 	};
 
+	console.log('template!!!!!!: ', attachmentsData);
 	return attachmentsData;		
 }
