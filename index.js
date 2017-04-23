@@ -286,8 +286,8 @@ function generateTemplates(attachments) {
 	const attachmentsData = {};
 	let elements = attachments.map(function(attachment) {
 		return ({
-			title: attachment.title,
-			subtitle: attachment.title,
+			title: attachment.title || 'No title',
+			subtitle: attachment.title || 'No subtitle',
 			item_url: attachment.url,
 		});
 	});
