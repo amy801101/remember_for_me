@@ -73,21 +73,26 @@ app.post('/webhook/', function (req, res) {
 				const dataRoot = databaseInstance.ref(position);
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
-					const tagResult = [];
+					const textResult = [];
+					const attachmentsResult = [];
 
 					snapshot.forEach((data) => {
 						const timestamps = data.getKey();
+						const { text, attachments } = data.val();
 
-						tagResult.push(data.val().text);
+						textResult.push(text);
+						if (attachments && attachments.length > 0) {
+							attachmentsResult = attachmentsResult.concat(attachments);
+						}
 			  	});
 
 					textData.message = {
-						text: tagResult.join("\n\n"),
+						text: textResult.join("\n\n"),
 					}
 					console.log('textData: ', textData);
 			  	sendMessageOrAttach(sender, textData);
 
-			  	if (attachments.length > 0) {
+			  	if (attachmentsResult.length > 0) {
 			  		sendTextMessageAttach(generateTemplates(attachments));
 			  	}
 				});
