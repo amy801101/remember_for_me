@@ -62,11 +62,11 @@ app.post('/webhook/', function (req, res) {
 		console.log('message: ', event.message);
 		if (event.message && event.message.text) {
 			const messageId = event.message.mid;
-			const text = event.message.text
-			const tag = shouldGetNotesByTags(text);
+			const text = event.message.text;
+			let tag = '';
 			const attachments = event.message.attachments || [];
 
-			if (shouldGetNotesByTags(text)) {	//show notes by tag
+			if (text = shouldGetNotesByTags(text)) {	//show notes by tag
 				const position = `${NOTES_PATH}/${sender}/${tag}`;
 				const dataRoot = databaseInstance.ref(position);
 
@@ -183,10 +183,10 @@ app.post('/webhook/', function (req, res) {
 				textData.message = {
 					text: "小的記住了:\n" + firebaseData.text,
 				}
-				//sendMessageOrAttach(sender, textData);
+				sendMessageOrAttach(sender, textData);
 
 				console.log('firebaseData: ', firebaseData);
-				//writeUserData(sender, tags, messageId, firebaseData);
+				writeUserData(sender, tags, messageId, firebaseData);
 			}
 		}
 		if (event.postback) {
@@ -280,7 +280,7 @@ function getTags(str) {
 }
 
 function shouldGetNotesByTags(str) {
-	const tagReg = /(show #)(\S[^#]+)/g;
+	const tagReg = /(show #)[^\s\.\$\#]+/g;
 	let match = tagReg.exec(str);
 
 	return match && match[2];
