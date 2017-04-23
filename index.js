@@ -63,11 +63,12 @@ app.post('/webhook/', function (req, res) {
 		if (event.message && event.message.text) {
 			const messageId = event.message.mid;
 			const text = event.message.text;
-			let tag = '';
+			let showedTag = '';
+			let tags = '';
 			const attachments = event.message.attachments || [];
 
-			if (tag = shouldGetNotesByTags(text)) {	//show notes by tag
-				const position = `${NOTES_PATH}/${sender}/${tag}`;
+			if (showedTag = shouldGetNotesByTags(text)) {	//show notes by tag
+				const position = `${NOTES_PATH}/${sender}/${showedTag}`;
 				const dataRoot = databaseInstance.ref(position);
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
@@ -86,9 +87,8 @@ app.post('/webhook/', function (req, res) {
 					console.log('textData: ', textData);
 			  	sendMessageOrAttach(sender, textData);
 				});
-			} else {		// write tag
+			} else if (tags) {		// write tag
 				const str = text.substring(0, 200);
-				const tags = getTags(text);
 				const firebaseData = {};
 				const textData = {};
 				// let testData = {};
@@ -187,6 +187,12 @@ app.post('/webhook/', function (req, res) {
 
 				console.log('firebaseData: ', firebaseData);
 				writeUserData(sender, tags, messageId, firebaseData);
+			} else {
+				textData.message = {
+					text: "Sorry I don't get you. Try: \n#test this is a test \nto save notes. Or Try:\n show #test.\n to show notes by tag.",
+				}
+				
+		  	sendMessageOrAttach(sender, textData);
 			}
 		}
 		if (event.postback) {
@@ -280,7 +286,7 @@ function getTags(str) {
 }
 
 function shouldGetNotesByTags(str) {
-	const tagReg = /(show #)[^\s\.\$\#]+/g;
+	const tagReg = /(show #)([^\s\.\$\#]+)/g;
 	let match = tagReg.exec(str);
 
 	return match && match[2];
