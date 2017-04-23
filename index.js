@@ -234,7 +234,7 @@ function getTags(str) {
 }
 
 function shouldGetNotesByTags(str) {
-	const tagReg = /(?i)(show #)([^\s\.\$\#\[\]]+)/g;
+	const tagReg = /(show #)([^\s\.\$\#\[\]]+)/g;
 	let match = tagReg.exec(str);
 
 	return match && match[2];
