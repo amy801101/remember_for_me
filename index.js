@@ -74,8 +74,6 @@ app.post('/webhook/', function (req, res) {
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
 					const tagResult = [];
-					//generateTemplates();
-
 
 					snapshot.forEach((data) => {
 						const timestamps = data.getKey();
@@ -88,6 +86,10 @@ app.post('/webhook/', function (req, res) {
 					}
 					console.log('textData: ', textData);
 			  	sendMessageOrAttach(sender, textData);
+
+			  	if (attachments.length > 0) {
+			  		sendTextMessageAttach(generateTemplates(attachments));
+			  	}
 				});
 			} else if (tags = getTags(text)) {		// write tag
 				const str = text.substring(0, 200);
@@ -211,7 +213,7 @@ function writeUserData(userId, tags, messageId, firebaseData) {
 
 /* str processing */
 function getTags(str) {
-	const tagReg = /(^#| #)([^\s\.\$\#]+)/gm;
+	const tagReg = /(^#| #)([^\s\.\$\#\[\]]+)/gm;
 	let match = tagReg.exec(str);
 	const result = [];
 
@@ -227,7 +229,7 @@ function getTags(str) {
 }
 
 function shouldGetNotesByTags(str) {
-	const tagReg = /(show #)([^\s\.\$\#]+)/g;
+	const tagReg = /(?i)(show #)([^\s\.\$\#\[\]]+)/g;
 	let match = tagReg.exec(str);
 
 	return match && match[2];
@@ -240,7 +242,7 @@ function retrievePureUrl(url) {
 	return (match && decodeURIComponent(match[1])) || url;
 }
 
-function generateTemplates() {
+function generateTemplates(attachments) {
 						/*
 					testData.message = {
     				attachment:{
@@ -281,23 +283,25 @@ function generateTemplates() {
         		}
         	};
         	*/
-        	/*
-        	const attachmentsData = {};
-        	const attachment = attachments[0];
+        	
+	const attachmentsData = {};
+	let elements = attachments.map(function(attachment) {
+		return ({
+			title: attachment.title,
+			subtitle: attachment.title,
+			item_url: attachment.url,
+		});
+	});
 
-					attachmentsData.message = {
-						attachment: {
-      				type: "template",
-      				payload:{
-	        			template_type: "generic",
-	        			elements: [{
-	        				title: attachment.title,
-	        				subtitle: attachment.title,
-	        				item_url: retrievePureUrl(attachment.url),
-	        			}],
-	        		}
-	        	}
-					};
-					sendMessageOrAttach(sender, attachmentsData);
-					*/
+	attachmentsData.message = {
+		attachment: {
+			type: "template",
+			payload:{
+				template_type: "generic",
+				elements,
+			}
+		}
+	};
+
+	return attachmentsData;		
 }
