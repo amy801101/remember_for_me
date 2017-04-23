@@ -95,7 +95,7 @@ app.post('/webhook/', function (req, res) {
 			  	sendMessageOrAttach(sender, textData);
 
 			  	if (attachmentsResult.length > 0) {
-			  		sendTextMessageAttach(generateTemplates(attachments));
+			  		sendMessageOrAttach(sender, generateTemplates(attachments));
 			  	}
 				});
 			} else if (tags = getTags(text)) {		// write tag
