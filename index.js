@@ -87,7 +87,7 @@ app.post('/webhook/', function (req, res) {
 					console.log('textData: ', textData);
 			  	sendMessageOrAttach(sender, textData);
 				});
-			} else if (tags) {		// write tag
+			} else if (tags = getTags(text)) {		// write tag
 				const str = text.substring(0, 200);
 				const firebaseData = {};
 				// let testData = {};
