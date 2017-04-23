@@ -63,9 +63,10 @@ app.post('/webhook/', function (req, res) {
 		if (event.message && event.message.text) {
 			const messageId = event.message.mid;
 			const text = event.message.text;
+			const attachments = event.message.attachments || [];
 			let showedTag = '';
 			let tags = '';
-			const attachments = event.message.attachments || [];
+			const textData = {};
 
 			if (showedTag = shouldGetNotesByTags(text)) {	//show notes by tag
 				const position = `${NOTES_PATH}/${sender}/${showedTag}`;
@@ -73,7 +74,6 @@ app.post('/webhook/', function (req, res) {
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
 					const tagResult = [];
-					const textData = {};
 
 					snapshot.forEach((data) => {
 						const timestamps = data.getKey();
@@ -90,7 +90,6 @@ app.post('/webhook/', function (req, res) {
 			} else if (tags) {		// write tag
 				const str = text.substring(0, 200);
 				const firebaseData = {};
-				const textData = {};
 				// let testData = {};
 
 				firebaseData.id = messageId;
@@ -191,7 +190,7 @@ app.post('/webhook/', function (req, res) {
 				textData.message = {
 					text: "Sorry I don't get you. Try: \n#test this is a test \nto save notes. Or Try:\n show #test.\n to show notes by tag.",
 				}
-				
+
 		  	sendMessageOrAttach(sender, textData);
 			}
 		}
