@@ -281,7 +281,7 @@ function getTags(str) {
   	result.push(match[2]);
   	match = tagReg.exec(str);
 	}
-	return result;
+	return result.length > 0 ? result : null;
 }
 
 function shouldGetNotesByTags(str) {
