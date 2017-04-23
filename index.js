@@ -81,6 +81,8 @@ app.post('/webhook/', function (req, res) {
 						const { text, attachments } = data.val();
 
 						textResult.push(text);
+						console.log('data.val !!!!!!!!!!!: ', data.val());
+
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
 						}
