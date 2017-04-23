@@ -14,7 +14,7 @@ const pageToken = process.env.PAGE_TOKEN;
 // TODO: Replace with your project's customized code snippet
 const NOTES_PATH = 'notes';
 const ALL_NOTES_PATH = 'general-notes-by-id';
-const LIST_LIMIT_COUNT = 50;
+const LIST_LIMIT_COUNT = 15;
 const serviceAccount = require("./remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
 const firebaseConfig = {
 	credential: admin.credential.cert(serviceAccount),
@@ -66,33 +66,28 @@ app.post('/webhook/', function (req, res) {
 			const attachments = event.message.attachments || [];
 			let showedTag = '';
 			let tags = '';
-			const textData = {};
 
 			if (showedTag = shouldGetNotesByTags(text)) {	//show notes by tag
 				const position = `${NOTES_PATH}/${sender}/${showedTag}`;
 				const dataRoot = databaseInstance.ref(position);
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
-					let textResult = [];
 					let attachmentsResult = [];
 
 					snapshot.forEach((data) => {
+						const textData = {};
 						const timestamps = data.getKey();
 						const { text, attachments } = data.val();
 
-						textResult.push(text);
-						console.log('data.val !!!!!!!!!!!: ', data.val());
+						textData.message = { text };
+						console.log('textData: ', textData);
+
+			  		sendMessageOrAttach(sender, textData);
 
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
 						}
 			  	});
-
-					textData.message = {
-						text: textResult.join("\n\n"),
-					}
-					console.log('textData: ', textData);
-			  	sendMessageOrAttach(sender, textData);
 
 			  	if (attachmentsResult.length > 0) {
 			  		sendMessageOrAttach(sender, generateTemplates(attachmentsResult));
@@ -101,7 +96,6 @@ app.post('/webhook/', function (req, res) {
 			} else if (tags = getTags(text)) {		// write tag
 				const str = text.substring(0, 200);
 				const firebaseData = {};
-				// let testData = {};
 
 				firebaseData.id = messageId;
 				firebaseData.text = str;
@@ -110,8 +104,6 @@ app.post('/webhook/', function (req, res) {
 				if (attachments.length > 0) {
 					firebaseData.attachments = attachments.map(function(attachment) {
 						let pureUrl = retrievePureUrl(attachment.url);
-						console.log('pureUrl: ', pureUrl);
-						console.log('payload: ', attachment.payload);
 
 						if (attachment.payload && attachment.payload.url) {
 							pureUrl = attachment.payload.url;
@@ -228,7 +220,7 @@ function getTags(str) {
    // matched text: match[0]
    // match start: match.index
    // capturing group n: match[n]
-  	console.log('match: ', match[2]); //match[2] is the second group
+  	console.log('Match: ', match[2]); //match[2] is the second group
   	result.push(match[2]);
   	match = tagReg.exec(str);
 	}
@@ -310,6 +302,5 @@ function generateTemplates(attachments) {
 		}
 	};
 
-	console.log('template elements!!!!!!: ', elements);
 	return attachmentsData;		
 }
