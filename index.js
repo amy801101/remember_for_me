@@ -73,8 +73,8 @@ app.post('/webhook/', function (req, res) {
 				const dataRoot = databaseInstance.ref(position);
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
-					const textResult = [];
-					const attachmentsResult = [];
+					let textResult = [];
+					let attachmentsResult = [];
 
 					snapshot.forEach((data) => {
 						const timestamps = data.getKey();
