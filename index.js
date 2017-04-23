@@ -74,6 +74,8 @@ app.post('/webhook/', function (req, res) {
 
 				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
 					const tagResult = [];
+					//generateTemplates();
+
 
 					snapshot.forEach((data) => {
 						const timestamps = data.getKey();
@@ -97,66 +99,6 @@ app.post('/webhook/', function (req, res) {
 
 				// if contains attachments, it must be link
 				if (attachments.length > 0) {
-					/*
-					testData.message = {
-    				attachment:{
-      				type: "template",
-      				payload:{
-	        			template_type: "generic",
-	        			elements: [
-	        				{
-				            title:"Welcome to Peter\'s Hats",
-				            subtitle:"We\'ve got the right hat for everyone.",
-				            item_url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
-				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
-				            // buttons: [{
-				            //   type: "web_url",
-				            //   url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
-				            //   title: "「由一群有所欠缺的人共同演奏出來，才足以成為音樂。」"
-				            // }, {
-				            //   type: "postback",
-				            //   title: "Abonnieren",
-				            //   payload: "subscribe-fischer",
-				            // }],
-				            // default_action: {
-				            //   type: "web_url",
-				            //   url: "http://news.cnyes.com/news/cat/headline",
-				            //   //messenger_extensions: true,
-				            //   webview_height_ratio: "tall",
-				            //   fallback_url: "http://news.cnyes.com/news/cat/headline"
-				            // },
-				          },
-				          {
-				            title:"Welcome to Peter\'s Hats~~~~~~~~",
-				            subtitle:"We\'ve got the right hat for everyone.",
-				            item_url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
-				            //image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
-				          },
-	        			],
-        			}
-        		}
-        	};
-        	*/
-        	/*
-        	const attachmentsData = {};
-        	const attachment = attachments[0];
-
-					attachmentsData.message = {
-						attachment: {
-      				type: "template",
-      				payload:{
-	        			template_type: "generic",
-	        			elements: [{
-	        				title: attachment.title,
-	        				subtitle: attachment.title,
-	        				item_url: retrievePureUrl(attachment.url),
-	        			}],
-	        		}
-	        	}
-					};
-					sendMessageOrAttach(sender, attachmentsData);
-					*/
-
 					firebaseData.attachments = attachments.map(function(attachment) {
 						let pureUrl = retrievePureUrl(attachment.url);
 						console.log('pureUrl: ', pureUrl);
@@ -269,7 +211,7 @@ function writeUserData(userId, tags, messageId, firebaseData) {
 
 /* str processing */
 function getTags(str) {
-	const tagReg = /(^#| #)(\S+)/g;
+	const tagReg = /(^#| #)([^\s\.\$\#]+)/gm;
 	let match = tagReg.exec(str);
 	const result = [];
 
@@ -296,4 +238,66 @@ function retrievePureUrl(url) {
 	let match = pureUrlReg.exec(url);
 
 	return (match && decodeURIComponent(match[1])) || url;
+}
+
+function generateTemplates() {
+						/*
+					testData.message = {
+    				attachment:{
+      				type: "template",
+      				payload:{
+	        			template_type: "generic",
+	        			elements: [
+	        				{
+				            title:"Welcome to Peter\'s Hats",
+				            subtitle:"We\'ve got the right hat for everyone.",
+				            item_url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
+				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
+				            // buttons: [{
+				            //   type: "web_url",
+				            //   url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
+				            //   title: "「由一群有所欠缺的人共同演奏出來，才足以成為音樂。」"
+				            // }, {
+				            //   type: "postback",
+				            //   title: "Abonnieren",
+				            //   payload: "subscribe-fischer",
+				            // }],
+				            // default_action: {
+				            //   type: "web_url",
+				            //   url: "http://news.cnyes.com/news/cat/headline",
+				            //   //messenger_extensions: true,
+				            //   webview_height_ratio: "tall",
+				            //   fallback_url: "http://news.cnyes.com/news/cat/headline"
+				            // },
+				          },
+				          {
+				            title:"Welcome to Peter\'s Hats~~~~~~~~",
+				            subtitle:"We\'ve got the right hat for everyone.",
+				            item_url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
+				            //image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
+				          },
+	        			],
+        			}
+        		}
+        	};
+        	*/
+        	/*
+        	const attachmentsData = {};
+        	const attachment = attachments[0];
+
+					attachmentsData.message = {
+						attachment: {
+      				type: "template",
+      				payload:{
+	        			template_type: "generic",
+	        			elements: [{
+	        				title: attachment.title,
+	        				subtitle: attachment.title,
+	        				item_url: retrievePureUrl(attachment.url),
+	        			}],
+	        		}
+	        	}
+					};
+					sendMessageOrAttach(sender, attachmentsData);
+					*/
 }
