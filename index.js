@@ -66,7 +66,7 @@ app.post('/webhook/', function (req, res) {
 			let tag = '';
 			const attachments = event.message.attachments || [];
 
-			if (text = shouldGetNotesByTags(text)) {	//show notes by tag
+			if (tag = shouldGetNotesByTags(text)) {	//show notes by tag
 				const position = `${NOTES_PATH}/${sender}/${tag}`;
 				const dataRoot = databaseInstance.ref(position);
 
