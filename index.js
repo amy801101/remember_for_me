@@ -291,10 +291,7 @@ function generateTemplates(attachments) {
 			item_url: attachment.url,
 			default_action: {
         type: 'web_url',
-        title: attachment.title || 'No title',
         url: attachment.url,
-        webview_height_ratio: 'tall',
-        fallback_url: attachment.url,
       },
 		});
 	});
