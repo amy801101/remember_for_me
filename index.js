@@ -291,10 +291,10 @@ function generateTemplates(attachments) {
 			item_url: attachment.url,
 			default_action: {
         type: 'web_url',
-        url: 'https://peterssendreceiveapp.ngrok.io/view?item=103',
+        url: attachment.url,
         messenger_extensions: true,
         webview_height_ratio: 'tall',
-        fallback_url: 'https://peterssendreceiveapp.ngrok.io/'
+        fallback_url: attachment.url,
       },
 		});
 	});
