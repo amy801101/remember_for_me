@@ -288,7 +288,7 @@ function generateTemplates(attachments) {
 		return ({
 			title: attachment.title || 'No title',
 			subtitle: attachment.title || 'No subtitle',
-			item_url: attachment.url,
+			// item_url: attachment.url,
 			default_action: {
         type: 'web_url',
         url: attachment.url,
