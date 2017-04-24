@@ -66,6 +66,7 @@ app.post('/webhook/', function (req, res) {
 			const attachments = event.message.attachments || [];
 			let showedTag = '';
 			let tags = '';
+			const textData = {};
 
 			if (showedTag = shouldGetNotesByTags(text)) {	//show notes by tag
 				const position = `${NOTES_PATH}/${sender}/${showedTag}`;
@@ -75,7 +76,6 @@ app.post('/webhook/', function (req, res) {
 					let attachmentsResult = [];
 
 					snapshot.forEach((data) => {
-						const textData = {};
 						const timestamps = data.getKey();
 						const { text, attachments } = data.val();
 
