@@ -292,7 +292,6 @@ function generateTemplates(attachments) {
 			default_action: {
         type: 'web_url',
         url: attachment.url,
-        messenger_extensions: true,
         webview_height_ratio: 'tall',
         fallback_url: attachment.url,
       },
