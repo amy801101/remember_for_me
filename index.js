@@ -322,17 +322,22 @@ function generateTemplates(attachments) {
         	
 	const attachmentsData = {};
 	let elements = attachments.map(function(attachment) {
-		return ({
+		const result = {
 			title: attachment.title || 'No title',
 			subtitle: attachment.description || 'No subtitle',
-			image_url: attachment.image,
 			// item_url: attachment.url,
 			default_action: {
         type: 'web_url',
         url: attachment.url,
         webview_height_ratio: 'tall',
       },
-		});
+		};
+
+		if (attachment.image) {
+			result.image_url = attachment.image;
+		}
+
+		return result;
 	});
 
 	attachmentsData.message = {
