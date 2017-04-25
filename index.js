@@ -86,9 +86,12 @@ app.post('/webhook/', function (req, res) {
 
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
+							// template method 1:
+							// sendMessageOrAttach(sender, generateTemplates(attachments));
 						}
 			  	});
 
+					// template method 2:
 			  	if (attachmentsResult.length > 0) {
 			  		sendMessageOrAttach(sender, generateTemplates(attachmentsResult));
 			  	}
@@ -134,8 +137,7 @@ app.post('/webhook/', function (req, res) {
 							text: "小的記住了:\n" + firebaseData.text,
 						}
 						sendMessageOrAttach(sender, textData);
-
-						console.log('firebaseData: ', firebaseData);
+						sendMessageOrAttach(sender, generateTemplates([firebaseData.attachments[0]]));
 						writeUserData(sender, tags, messageId, firebaseData);
 					});
 				} else {
@@ -143,11 +145,10 @@ app.post('/webhook/', function (req, res) {
 						text: "小的記住了:\n" + firebaseData.text,
 					}
 					sendMessageOrAttach(sender, textData);
-
-					console.log('firebaseData: ', firebaseData);
 					writeUserData(sender, tags, messageId, firebaseData);
 				}
-
+				console.log('firebaseData: ', firebaseData);
+				
 			} else { // other situation
 				textData.message = {
 					text: "Sorry I don't get you. Try: \n#test this is a test \nto save notes. Or Try:\n show #test.\n to show notes by tag.",
