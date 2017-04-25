@@ -87,14 +87,14 @@ app.post('/webhook/', function (req, res) {
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
 							// template method 1:
-							// sendMessageOrAttach(sender, generateTemplates(attachments));
+							sendMessageOrAttach(sender, generateTemplates(attachments));
 						}
 			  	});
 
 					// template method 2:
-			  	if (attachmentsResult.length > 0) {
-			  		sendMessageOrAttach(sender, generateTemplates(attachmentsResult));
-			  	}
+			  	// if (attachmentsResult.length > 0) {
+			  	// 	sendMessageOrAttach(sender, generateTemplates(attachmentsResult));
+			  	// }
 				});
 			} else if (tags = getTags(text)) {		// write tag
 				const str = text.substring(0, 200);
@@ -148,7 +148,7 @@ app.post('/webhook/', function (req, res) {
 					writeUserData(sender, tags, messageId, firebaseData);
 				}
 				console.log('firebaseData: ', firebaseData);
-				
+
 			} else { // other situation
 				textData.message = {
 					text: "Sorry I don't get you. Try: \n#test this is a test \nto save notes. Or Try:\n show #test.\n to show notes by tag.",
