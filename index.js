@@ -324,8 +324,8 @@ function generateTemplates(attachments) {
 	let elements = attachments.map(function(attachment) {
 		return ({
 			title: attachment.title || 'No title',
-			subtitle: attachment.title || 'No subtitle',
-			image_url: attachment.url,
+			subtitle: attachment.description || 'No subtitle',
+			image_url: attachment.image,
 			// item_url: attachment.url,
 			default_action: {
         type: 'web_url',
