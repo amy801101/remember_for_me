@@ -120,16 +120,35 @@ app.post('/webhook/', function (req, res) {
 							payload: attachment.payload || '',
 						};
 					});
-				} 
 
-				textData.message = {
-					text: "小的記住了:\n" + firebaseData.text,
+					const previewUrl = retrievePureUrl(firebaseData.attachments[0].url);
+					previewUrl && getLinkPreview(previewUrl, function(result) {
+						firebaseData.attachments[0] = Object.assign({}, firebaseData.attachments[0], {
+							title: result.title,
+							description: result.description,
+							url: result.url,
+							image: result.image,
+						});
+
+						textData.message = {
+							text: "小的記住了:\n" + firebaseData.text,
+						}
+						sendMessageOrAttach(sender, textData);
+
+						console.log('firebaseData: ', firebaseData);
+						writeUserData(sender, tags, messageId, firebaseData);
+					});
+				} else {
+					textData.message = {
+						text: "小的記住了:\n" + firebaseData.text,
+					}
+					sendMessageOrAttach(sender, textData);
+
+					console.log('firebaseData: ', firebaseData);
+					writeUserData(sender, tags, messageId, firebaseData);
 				}
-				sendMessageOrAttach(sender, textData);
 
-				console.log('firebaseData: ', firebaseData);
-				writeUserData(sender, tags, messageId, firebaseData);
-			} else {
+			} else { // other situation
 				textData.message = {
 					text: "Sorry I don't get you. Try: \n#test this is a test \nto save notes. Or Try:\n show #test.\n to show notes by tag.",
 				}
@@ -239,6 +258,24 @@ function retrievePureUrl(url) {
 	let match = pureUrlReg.exec(url);
 
 	return (match && decodeURIComponent(match[1])) || url;
+}
+
+function getLinkPreview(url, callbackFun = null) {
+
+  request.get({
+    url: 'https://api.linkpreview.net', 
+    qs: {
+      key: '58fdf8948597dee0f34b734215fee701a993776c2fae4',
+      q: url,
+    },
+    json: true,
+  }, function(error, response, body) {
+    if (!error && response.statusCode == 200) {
+      const result = body;
+      console.log('success!!!! ', result);
+      callbackFun && callbackFun(result);
+    }
+  });
 }
 
 function generateTemplates(attachments) {
