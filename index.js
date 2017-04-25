@@ -86,15 +86,15 @@ app.post('/webhook/', function (req, res) {
 
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
-							// template method 1:
-							sendMessageOrAttach(sender, generateTemplates(attachments));
+							// template method 1: BUT TEMPLATE WILL BE MUCH SLOWER THAN TEXT
+							// sendMessageOrAttach(sender, generateTemplates(attachments));
 						}
 			  	});
 
 					// template method 2:
-			  	// if (attachmentsResult.length > 0) {
-			  	// 	sendMessageOrAttach(sender, generateTemplates(attachmentsResult));
-			  	// }
+			  	if (attachmentsResult.length > 0) {
+			  		sendMessageOrAttach(sender, generateTemplates(attachmentsResult));
+			  	}
 				});
 			} else if (tags = getTags(text)) {		// write tag
 				const str = text.substring(0, 200);
