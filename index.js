@@ -263,7 +263,7 @@ function retrievePureUrl(url) {
 function getLinkPreview(url, callbackFun = null) {
 
   request.get({
-    url: 'https://api.linkpreview.net', 
+    url: 'http://api.linkpreview.net', 
     qs: {
       key: '58fdf8948597dee0f34b734215fee701a993776c2fae4',
       q: url,
