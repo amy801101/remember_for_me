@@ -159,11 +159,11 @@ app.post('/webhook/', function (req, res) {
 		  	sendMessageOrAttach(sender, textData);
 			}
 		}
-		if (event.postback) {
-			let text = JSON.stringify(event.postback)
-			sendTextMessage(sender, "Postback received: " + text.substring(0, 200), token)
-			continue
-		}
+		// if (event.postback) {
+		// 	let text = JSON.stringify(event.postback)
+		// 	sendTextMessage(sender, "Postback received: " + text.substring(0, 200), token)
+		// 	continue
+		// }
 	}
 	res.sendStatus(200)
 })
@@ -318,11 +318,13 @@ function generateResponseTemplates(text) {
 	let buttons = [
     {
       type: 'web_url',
+      webview_height_ratio: 'tall',
       url: 'https://petersapparel.parseapp.com',
       title: 'Show Website',
     },
     {
       type: 'postback',
+      webview_height_ratio: 'tall',
       title: 'Start Chatting',
       payload: 'USER_DEFINED_PAYLOAD',
     }
@@ -333,6 +335,7 @@ function generateResponseTemplates(text) {
 			type: "template",
 			payload:{
 				template_type: 'button',
+				sharable: true,
       	text,
 				buttons,
 			}
