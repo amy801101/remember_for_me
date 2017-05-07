@@ -318,13 +318,13 @@ function generateResponseTemplates(text) {
 	let buttons = [
     {
       type: 'web_url',
-      webview_height_ratio: 'tall',
+      webview_height_ratio: 'compact',
       url: 'https://petersapparel.parseapp.com',
       title: 'Show Website',
     },
     {
       type: 'postback',
-      webview_height_ratio: 'tall',
+      webview_height_ratio: 'compact',
       title: 'Start Chatting',
       payload: 'USER_DEFINED_PAYLOAD',
     }
