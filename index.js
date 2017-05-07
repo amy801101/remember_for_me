@@ -58,8 +58,11 @@ app.post('/webhook/', function (req, res) {
 		let event = req.body.entry[0].messaging[i]
 		let sender = event.sender.id
 
-		console.log('message: ', event.message);
-		if (event.message && event.message.text) {
+		if (event.postback) { // handle postback action
+			console.log('postback: ', event.postback);
+
+		} else if (event.message && event.message.text) {
+			console.log('message: ', event.message);
 			const messageId = event.message.mid;
 			const text = event.message.text;
 			const attachments = event.message.attachments || [];
@@ -78,21 +81,21 @@ app.post('/webhook/', function (req, res) {
 						const timestamps = data.getKey();
 						const { text, attachments } = data.val();
 
-						textData.message = { text };
-						console.log('textData: ', textData);
-
-			  		sendMessageOrAttach(sender, textData);
+						// textData.message = { text };
+						// console.log('textData: ', textData);
+			  		// sendMessageOrAttach(sender, textData);
+			  		sendMessageOrAttach(sender, generateResponseTemplates(text));
 
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
 							// template method 1: BUT TEMPLATE WILL BE MUCH SLOWER THAN TEXT
-							// sendMessageOrAttach(sender, generateTemplates(attachments));
+							// sendMessageOrAttach(sender, generateGenericTemplates(attachments));
 						}
 			  	});
 
 					// template method 2:
 			  	if (attachmentsResult.length > 0) {
-			  		sendMessageOrAttach(sender, generateTemplates(attachmentsResult));
+			  		sendMessageOrAttach(sender, generateGenericTemplates(attachmentsResult));
 			  	}
 				});
 			} else if (tags = getTags(text)) {		// write tag
@@ -136,7 +139,7 @@ app.post('/webhook/', function (req, res) {
 							text: "小的記住了:\n" + firebaseData.text,
 						}
 						sendMessageOrAttach(sender, textData);
-						sendMessageOrAttach(sender, generateTemplates([firebaseData.attachments[0]]));
+						sendMessageOrAttach(sender, generateGenericTemplates([firebaseData.attachments[0]]));
 						writeUserData(sender, tags, messageId, firebaseData);
 					});
 				} else {
@@ -213,7 +216,6 @@ function initialFireBase() {
 //   return result.join("\n");
 // }
 
-// e.g. writeUserData('test_id', '#test 1234');
 function writeUserData(userId, tags, messageId, firebaseData) {
   const timestamps = new Date().getTime();
 
@@ -272,54 +274,12 @@ function getLinkPreview(url, callbackFun = null) {
   }, function(error, response, body) {
     if (!error && response.statusCode == 200) {
       const result = body;
-      console.log('success!!!! ', result);
       callbackFun && callbackFun(result);
     }
   });
 }
 
-function generateTemplates(attachments) {
-						/*
-					testData.message = {
-    				attachment:{
-      				type: "template",
-      				payload:{
-	        			template_type: "generic",
-	        			elements: [
-	        				{
-				            title:"Welcome to Peter\'s Hats",
-				            subtitle:"We\'ve got the right hat for everyone.",
-				            item_url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
-				            image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
-				            // buttons: [{
-				            //   type: "web_url",
-				            //   url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
-				            //   title: "「由一群有所欠缺的人共同演奏出來，才足以成為音樂。」"
-				            // }, {
-				            //   type: "postback",
-				            //   title: "Abonnieren",
-				            //   payload: "subscribe-fischer",
-				            // }],
-				            // default_action: {
-				            //   type: "web_url",
-				            //   url: "http://news.cnyes.com/news/cat/headline",
-				            //   //messenger_extensions: true,
-				            //   webview_height_ratio: "tall",
-				            //   fallback_url: "http://news.cnyes.com/news/cat/headline"
-				            // },
-				          },
-				          {
-				            title:"Welcome to Peter\'s Hats~~~~~~~~",
-				            subtitle:"We\'ve got the right hat for everyone.",
-				            item_url: "https://www.facebook.com/WangDongsDramaTalk/photos/a.675504505835416.1073741828.675375152515018/1463213217064537/?type=3&theater",
-				            //image_url:"https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/18033581_1463213217064537_6590885616952603244_n.png?oh=725346ebedcaa2d7c9b188b6d6d0b217&oe=594FDE2A",
-				          },
-	        			],
-        			}
-        		}
-        	};
-        	*/
-        	
+function generateGenericTemplates(attachments) {
 	const attachmentsData = {};
 	let elements = attachments.map(function(attachment) {
 		const result = {
@@ -351,4 +311,33 @@ function generateTemplates(attachments) {
 	};
 
 	return attachmentsData;		
+}
+
+function generateResponseTemplates(text) {
+	const responseData = {};
+	let buttons = [
+    {
+      type: 'web_url',
+      url: 'https://petersapparel.parseapp.com',
+      title: 'Show Website',
+    },
+    {
+      type: 'postback',
+      title: 'Start Chatting',
+      payload: 'USER_DEFINED_PAYLOAD',
+    }
+  ];
+
+	responseData.message = {
+		attachment: {
+			type: "template",
+			payload:{
+				template_type: 'button',
+      	text,
+				buttons,
+			}
+		}
+	};
+
+	return responseData;		
 }
