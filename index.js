@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 // Process application/json
 app.use(bodyParser.json())
-
+ 
 // Index route
 app.get('/', function (req, res) {
 	res.send('Hello world, I am a chat bot')
@@ -53,7 +53,6 @@ app.listen(app.get('port'), function() {
 // Facebook robot -------
 // to post data
 app.post('/webhook/', function (req, res) {
-	console.log('webhook!!!!!!!!');
 	let messaging_events = req.body.entry[0].messaging
 	for (let i = 0; i < messaging_events.length; i++) {
 		let event = req.body.entry[0].messaging[i]
