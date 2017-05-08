@@ -332,7 +332,7 @@ function generateResponseTemplates(text, messageId) {
     {
       type: 'postback',
       title: 'Start Chatting',
-      payload: JSON.stringify(postbackJson);
+      payload: JSON.stringify(postbackJson),
     }
   ];
 
