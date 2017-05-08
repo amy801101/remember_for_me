@@ -78,13 +78,13 @@ app.post('/webhook/', function (req, res) {
 					let attachmentsResult = [];
 
 					snapshot.forEach((data) => {
-						const timestamps = data.getKey();
+						const messageId = data.getKey();
 						const { text, attachments } = data.val();
 
 						// textData.message = { text };
 						// console.log('textData: ', textData);
 			  		// sendMessageOrAttach(sender, textData);
-			  		sendMessageOrAttach(sender, generateResponseTemplates(text));
+			  		sendMessageOrAttach(sender, generateResponseTemplates(text, messageId));
 
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
@@ -172,14 +172,14 @@ app.post('/webhook/', function (req, res) {
 // recommended to inject access tokens as environmental variables, e.g.
 // const token = process.env.FB_PAGE_ACCESS_TOKEN
 
-function sendMessageOrAttach(sender, data) {
+function sendMessageOrAttach(sender, data, callbackFun = null) {
 	const jsonObj = Object.assign({}, {
 		recipient: { id: sender }
 	}, data);
 
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:pageToken},
+		qs: { access_token: pageToken },
 		method: 'POST',
 		json: jsonObj,
 	}, function(error, response, body) {
@@ -187,6 +187,10 @@ function sendMessageOrAttach(sender, data) {
 			console.log('Error sending messages: ', error)
 		} else if (response.body.error) {
 			console.log('Error: ', response.body.error)
+		}
+
+		if (callbackFun) {
+			callbackFun();
 		}
 	});
 }
@@ -313,20 +317,20 @@ function generateGenericTemplates(attachments) {
 	return attachmentsData;		
 }
 
-function generateResponseTemplates(text) {
+function generateResponseTemplates(text, messageId) {
 	const responseData = {};
 	let buttons = [
     {
       type: 'web_url',
-      webview_height_ratio: 'compact',
       url: 'https://petersapparel.parseapp.com',
       title: 'Show Website',
     },
     {
       type: 'postback',
-      webview_height_ratio: 'compact',
       title: 'Start Chatting',
-      payload: 'USER_DEFINED_PAYLOAD',
+      payload: {
+      	messageId,
+      },
     }
   ];
 
