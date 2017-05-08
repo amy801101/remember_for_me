@@ -329,6 +329,7 @@ function generateResponseTemplates(text, messageId) {
       type: 'postback',
       title: 'Start Chatting',
       payload: 'USER_DEFINED_PAYLOAD',
+      params: '123',
     }
   ];
 
