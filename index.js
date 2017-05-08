@@ -328,9 +328,7 @@ function generateResponseTemplates(text, messageId) {
     {
       type: 'postback',
       title: 'Start Chatting',
-      payload: {
-      	messageId,
-      },
+      payload: 'USER_DEFINED_PAYLOAD',
     }
   ];
 
