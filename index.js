@@ -319,6 +319,10 @@ function generateGenericTemplates(attachments) {
 
 function generateResponseTemplates(text, messageId) {
 	const responseData = {};
+	const postbackJson = {
+		type: 'DELETE_NOTE_BY_ID',
+		messageId,
+	};
 	let buttons = [
     {
       type: 'web_url',
@@ -328,8 +332,7 @@ function generateResponseTemplates(text, messageId) {
     {
       type: 'postback',
       title: 'Start Chatting',
-      payload: 'USER_DEFINED_PAYLOAD',
-      params: '123',
+      payload: JSON.stringify(postbackJson);
     }
   ];
 
