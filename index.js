@@ -59,8 +59,8 @@ app.post('/webhook/', function (req, res) {
 		let sender = event.sender.id
 
 		if (event.postback) { // handle postback action
+			console.log('postback: ', event.postback);
 			const response = JSON.parse(event.postback);
-			console.log('postback: ', response);
 			switch (response.type) {
 				case 'DELETE_NOTE_BY_ID':
 					const { messageId, tag } = response;
