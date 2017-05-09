@@ -59,7 +59,23 @@ app.post('/webhook/', function (req, res) {
 		let sender = event.sender.id
 
 		if (event.postback) { // handle postback action
-			console.log('postback: ', event.postback);
+			const response = JSON.parse(event.postback);
+			console.log('postback: ', response);
+			switch (response.type) {
+				case 'DELETE_NOTE_BY_ID':
+					const { messageId, tag } = response;
+					const textData = {
+						message: {
+							text: "小的忘記了:\n" + messageId,
+						}
+					}
+
+					removeNoteByPath(sender, tag, messageId);
+					sendMessageOrAttach(sender, textData);
+					break;
+				default:
+					break;
+			}
 
 		} else if (event.message && event.message.text) {
 			console.log('message: ', event.message);
@@ -81,10 +97,7 @@ app.post('/webhook/', function (req, res) {
 						const messageId = data.getKey();
 						const { text, attachments } = data.val();
 
-						// textData.message = { text };
-						// console.log('textData: ', textData);
-			  		// sendMessageOrAttach(sender, textData);
-			  		sendMessageOrAttach(sender, generateResponseTemplates(text, messageId));
+			  		sendMessageOrAttach(sender, generateResponseTemplates(text, showedTag, messageId));
 
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
@@ -235,6 +248,16 @@ function writeUserData(userId, tags, messageId, firebaseData) {
   });
 }
 
+function removeNoteByPath(userId, tag, messageId) {
+  // remove data in general
+  const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${messageId}`;
+  databaseInstance && databaseInstance.ref(notesPosition).remove();
+
+	// remove message in tag
+	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${messageId}`;
+  databaseInstance && databaseInstance.ref(tagPosition).remove();
+}
+
 /* str processing */
 function getTags(str) {
 	const tagReg = /(^#| #)([^\s\.\$\#\[\]]+)/gm;
@@ -317,21 +340,22 @@ function generateGenericTemplates(attachments) {
 	return attachmentsData;		
 }
 
-function generateResponseTemplates(text, messageId) {
+function generateResponseTemplates(text, tag, messageId) {
 	const responseData = {};
 	const postbackJson = {
 		type: 'DELETE_NOTE_BY_ID',
+		tag,
 		messageId,
 	};
 	let buttons = [
-    {
-      type: 'web_url',
-      url: 'https://petersapparel.parseapp.com',
-      title: 'Show Website',
-    },
+    // {
+    //   type: 'web_url',
+    //   url: 'https://petersapparel.parseapp.com',
+    //   title: 'Show Website',
+    // },
     {
       type: 'postback',
-      title: 'Start Chatting',
+      title: 'Forget this note',
       payload: JSON.stringify(postbackJson),
     }
   ];
