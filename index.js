@@ -96,6 +96,7 @@ app.post('/webhook/', function (req, res) {
 					snapshot.forEach((data) => {
 						const messageId = data.getKey();
 						const { text, attachments } = data.val();
+						console.log('text: ', text);
 
 			  		sendMessageOrAttach(sender, generateResponseTemplates(text, showedTag, messageId));
 
