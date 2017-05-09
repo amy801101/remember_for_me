@@ -90,7 +90,7 @@ app.post('/webhook/', function (req, res) {
 				const position = `${NOTES_PATH}/${sender}/${showedTag}`;
 				const dataRoot = databaseInstance.ref(position);
 
-				dataRoot.limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
+				dataRoot.orderByKey().limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
 					let attachmentsResult = [];
 
 					snapshot.forEach((data) => {
@@ -108,7 +108,7 @@ app.post('/webhook/', function (req, res) {
 
 					// template method 2:
 			  	if (attachmentsResult.length > 0) {
-			  		sendMessageOrAttach(sender, generateGenericTemplates(attachmentsResult));
+			  		// sendMessageOrAttach(sender, generateGenericTemplates(attachmentsResult));
 			  	}
 				});
 			} else if (tags = getTags(text)) {		// write tag
