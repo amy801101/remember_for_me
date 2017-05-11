@@ -63,14 +63,13 @@ app.post('/webhook/', function (req, res) {
 			const response = JSON.parse(event.postback.payload);
 			switch (response.type) {
 				case 'DELETE_NOTE_BY_ID':
-					const { messageId, tag } = response;
+					const { messageId, tag, text } = response;
 					const textData = {
 						message: {
-							text: "小的忘記了:\n" + messageId,
+							text: "小的忘記了:\n" + text,
 						}
 					}
 
-					getNoteById(sender, tag, messageId);
 					removeNoteByPath(sender, tag, messageId);
 					sendMessageOrAttach(sender, textData);
 					break;
@@ -292,20 +291,6 @@ function removeNoteByPath(userId, tag, messageId) {
   databaseInstance && databaseInstance.ref(tagPosition).remove();
 }
 
-function getNoteById(userId, tag, messageId) {
-  const tagPosition = `${NOTES_PATH}/${userId}/${tag}`;
-  const dataRoot = databaseInstance && databaseInstance.ref(tagPosition);
-  const result = {};
-
-  dataRoot.limitToLast(1).startAt(messageId).once('value', function (snapshot) {
-  	snapshot.forEach((data) => {
-  		result = data.val();
-  	});
-  });
-
-  return result;
-}
-
 /* str processing */
 function getTags(str) {
 	const tagReg = /(^#| #)([^\s\.\$\#\[\]]+)/gm;
@@ -394,6 +379,7 @@ function generateResponseTemplates(text, tag, messageId) {
 		type: 'DELETE_NOTE_BY_ID',
 		tag,
 		messageId,
+		text,
 	};
 	let buttons = [
     // {
