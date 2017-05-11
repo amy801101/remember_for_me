@@ -14,7 +14,7 @@ const pageToken = process.env.PAGE_TOKEN;
 // TODO: Replace with your project's customized code snippet
 const NOTES_PATH = 'notes';
 const ALL_NOTES_PATH = 'general-notes-by-id';
-const LIST_LIMIT_COUNT = 10;
+const LIST_LIMIT_COUNT = 5;
 const serviceAccount = require("./remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
 const firebaseConfig = {
 	credential: admin.credential.cert(serviceAccount),
@@ -284,11 +284,21 @@ function writeUserData(userId, tags, messageId, firebaseData) {
 function removeNoteByPath(userId, tag, messageId) {
   // remove data in general
   const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${messageId}`;
+ 	console.log('remove this one: ', databaseInstance.ref(notesPosition));
   databaseInstance && databaseInstance.ref(notesPosition).remove();
 
 	// remove message in tag
 	const tagPosition = `${NOTES_PATH}/${userId}/${tag}/${messageId}`;
   databaseInstance && databaseInstance.ref(tagPosition).remove();
+}
+
+function getNoteById(userId, tag, messageId) {
+  const tagPosition = `${NOTES_PATH}/${userId}/${tag}`;
+  const dataRoot = databaseInstance && databaseInstance.ref(tagPosition);
+  const result = {};
+  dataRoot.limitToLast(1).startAt(messageId).once('value', function (snapshot) {
+  	result = snapshot.val();
+  });
 }
 
 /* str processing */
@@ -388,7 +398,7 @@ function generateResponseTemplates(text, tag, messageId) {
     // },
     {
       type: 'postback',
-      title: 'Forget this note',
+      title: `Forget this note ${messageId}`,
       payload: JSON.stringify(postbackJson),
     }
   ];
