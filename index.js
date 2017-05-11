@@ -284,7 +284,7 @@ function writeUserData(userId, tags, messageId, firebaseData) {
 function removeNoteByPath(userId, tag, messageId) {
   // remove data in general
   const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${messageId}`;
- 	console.log('remove this one: ', databaseInstance.ref(notesPosition));
+ 	console.log('remove this one: ', databaseInstance.ref(notesPosition).val());
   databaseInstance && databaseInstance.ref(notesPosition).remove();
 
 	// remove message in tag
@@ -398,7 +398,7 @@ function generateResponseTemplates(text, tag, messageId) {
     // },
     {
       type: 'postback',
-      title: `Forget this note ${messageId}`,
+      title: `Forget this note`,
       payload: JSON.stringify(postbackJson),
     }
   ];
