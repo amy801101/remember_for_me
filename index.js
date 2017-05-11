@@ -70,6 +70,7 @@ app.post('/webhook/', function (req, res) {
 						}
 					}
 
+					getNoteById(sender, tag, messageId);
 					removeNoteByPath(sender, tag, messageId);
 					sendMessageOrAttach(sender, textData);
 					break;
@@ -284,7 +285,6 @@ function writeUserData(userId, tags, messageId, firebaseData) {
 function removeNoteByPath(userId, tag, messageId) {
   // remove data in general
   const notesPosition = `${NOTES_PATH}/${userId}/${ALL_NOTES_PATH}/${messageId}`;
- 	console.log('remove this one: ', databaseInstance.ref(notesPosition).val());
   databaseInstance && databaseInstance.ref(notesPosition).remove();
 
 	// remove message in tag
@@ -296,9 +296,14 @@ function getNoteById(userId, tag, messageId) {
   const tagPosition = `${NOTES_PATH}/${userId}/${tag}`;
   const dataRoot = databaseInstance && databaseInstance.ref(tagPosition);
   const result = {};
+
   dataRoot.limitToLast(1).startAt(messageId).once('value', function (snapshot) {
-  	result = snapshot.val();
+  	snapshot.forEach((data) => {
+  		result = data.val();
+  	});
   });
+
+  return result;
 }
 
 /* str processing */
