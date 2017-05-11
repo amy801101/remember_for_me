@@ -92,25 +92,31 @@ app.post('/webhook/', function (req, res) {
 
 				dataRoot.orderByKey().limitToLast(LIST_LIMIT_COUNT).once('value', function (snapshot) {
 					let attachmentsResult = [];
+					let results = [];
 
 					snapshot.forEach((data) => {
 						const messageId = data.getKey();
 						const { text, attachments } = data.val();
 						console.log('text: ', text);
 
-			  		sendMessageOrAttach(sender, generateResponseTemplates(text, showedTag, messageId));
+						results.push(generateResponseTemplates(text, showedTag, messageId));
+			  		// sendMessageOrAttach(sender, generateResponseTemplates(text, showedTag, messageId));
 
 						if (attachments && attachments.length > 0) {
 							attachmentsResult = attachmentsResult.concat(attachments);
 							// template method 1: BUT TEMPLATE WILL BE MUCH SLOWER THAN TEXT
-							// sendMessageOrAttach(sender, generateGenericTemplates(attachments));
+							results.push(generateGenericTemplates(attachments));
 						}
 			  	});
 
 					// template method 2:
 			  	if (attachmentsResult.length > 0) {
+			  		results.push(generateGenericTemplates(attachmentsResult));
 			  		// sendMessageOrAttach(sender, generateGenericTemplates(attachmentsResult));
 			  	}
+
+			  	console.log('results!!!!!: ', results);
+			  	sendRecursively(sender, results);
 				});
 			} else if (tags = getTags(text)) {		// write tag
 				const str = text.substring(0, 200);
@@ -207,6 +213,32 @@ function sendMessageOrAttach(sender, data, callbackFun = null) {
 			callbackFun();
 		}
 	});
+}
+
+function sendRecursively(sender, resultArr, idx = 0) {
+	if (idx >= resultArr.length) {
+		return;
+	}
+
+	const jsonObj = Object.assign({}, {
+		recipient: { id: sender }
+	}, resultArr[idx]);
+
+	request({
+		url: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: { access_token: pageToken },
+		method: 'POST',
+		json: jsonObj,
+	}, function(error, response, body) {
+		if (error) {
+			console.log('Error sending messages: ', error)
+		} else if (response.body.error) {
+			console.log('Error: ', response.body.error)
+		} else {
+			sendRecursively(sender, resultArr, idx + 1);
+		}
+	});
+
 }
 
 // initial firebase
