@@ -9,7 +9,7 @@ const pageToken = process.env.PAGE_TOKEN;
 // TODO: Replace with your project's customized code snippet
 const NOTES_PATH = 'notes';
 const ALL_NOTES_PATH = 'general-notes-by-id';
-const LIST_LIMIT_COUNT = 5;
+const LIST_LIMIT_COUNT = 10;
 const serviceAccount = require("../constants/remember-for-me-firebase-adminsdk-lp9fa-7812f46cb1.json"); 
 const firebaseConfig = {
   credential: admin.credential.cert(serviceAccount),
