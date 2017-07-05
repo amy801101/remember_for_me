@@ -46,7 +46,7 @@ exports.chatting = function (req, res) {
           const { messageId, tag, text } = response;
           const textData = {
             message: {
-              text: "遵命! 小的忘記了:\n" + text,
+              text: "遵命!~ 小的忘記了:\n" + text,
             }
           }
 
